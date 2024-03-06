@@ -15,7 +15,12 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-url = 'https://blog.mozilla.org/en/'
+url_list = ['https://www.bloomberg.com/europe', 'https://vimeo.com/',
+            'https://www.surveymonkey.com/', 'https://www.spotify.com/us/',
+            'https://www.kaspersky.de/', 'https://www.mcafee.com/',
+            'https://www.salesforce.com/de/?ir=1', 'https://www.nytimes.com/',
+            'https://raue.com/en/', 'https://www.obama.org/', 'https://www.sonymusic.com/',
+            'https://www.wfw.com/']
 
 
 def wordpress_or_not(target_url, details=False):
@@ -49,4 +54,5 @@ def wordpress_or_not(target_url, details=False):
 
 
 if __name__ == '__main__':
-    print(wordpress_or_not(url, details=True))
+    for i in url_list:
+        print(f'Сайт: {i}, результат:\n {wordpress_or_not(i, details=True)}')
