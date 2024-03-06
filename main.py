@@ -18,24 +18,35 @@ from bs4 import BeautifulSoup
 url = 'https://blog.mozilla.org/en/'
 
 
-def wordpress_or_not(target_url):
+def wordpress_or_not(target_url, details=False):
     response = requests.get(target_url)
     what_we_find = 'WordPress|wp|wp-content'
+    common_dirs = ["wp-admin", "wp-content", "wp-includes"]
     signals_meta = []
     signals_link = []
+    signals_dir = []
 
-    if response == 200 or 403:
+    if response.status_code == 200 or 403:
         soup = BeautifulSoup(response.text, 'lxml')
 
         signals_meta = soup.find_all('meta', content=re.compile(what_we_find))
         signals_link = soup.find_all('link', href=re.compile(what_we_find))
+
+        for dirs in common_dirs:
+            response = requests.get(f'{target_url}/{dirs}')
+            if response.status_code == 200:
+                signals_dir.append(f'{target_url}/{dirs}')
     else:
         print(f'Bad request: {response}')
-    if signals_link or signals_meta:
+    if details:
+        print(f'Meta tags: \n{signals_meta}\n\n'
+              f'Links: \n{signals_link}\n\n'
+              f'Dirs \n{signals_dir}\n\n')
+    if signals_link or signals_meta or signals_dir:
         return f'Yep, it uses WordPress'
     else:
         return f'Hmm, no, there are no traces specific to WordPress found here.'
 
 
 if __name__ == '__main__':
-    print(wordpress_or_not(url))
+    print(wordpress_or_not(url, details=True))
